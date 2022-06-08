@@ -30,10 +30,10 @@ func main() {
 	fmt.Println("SECRET: ", minioSecret)
 
 	// Set up minio
-	endpoint := minioUrl			// "play.min.io"
-	accessKeyID := minioKey 		// "Q3AM3UQ867SPQQA43P2F"
-	secretAccessKey := minioSecret	// "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
-	useSSL := minioSSL				// true
+	endpoint := minioUrl
+	accessKeyID := minioKey
+	secretAccessKey := minioSecret
+	useSSL := minioSSL
 
 	// Initialize minio client object.
 	minioClient, err := minio.New(endpoint, &minio.Options{
