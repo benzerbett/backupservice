@@ -26,6 +26,10 @@ This repo uses some experimental features in Go 1.18. This is the [slices](https
   ```bash
       nano .env
   ```
+- To test it locally, simply run the ```main.go``` file
+ ```bash
+    go run main.go
+```
 - Build & deploy
  ```bash
     go build -o backupservice
