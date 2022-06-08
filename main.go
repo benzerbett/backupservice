@@ -73,7 +73,7 @@ func main() {
 			if err != nil {
 				log.Fatalln("Could not open file "+f.Name()+". ", err)
 			}
-			fileType, err := GetFileContentType(fopen)
+			fileType, err := getFileContentType(fopen)
 			if err != nil {
 				log.Fatalln("Could not read file type.", err)
 			}
@@ -88,21 +88,14 @@ func main() {
 	}
 
 }
-func GetFileContentType(ouput *os.File) (string, error) {
 
-	// to sniff the content type only the first
-	// 512 bytes are used.
 
+func getFileContentType(ouput *os.File) (string, error) {
 	buf := make([]byte, 512)
-
 	_, err := ouput.Read(buf)
-
 	if err != nil {
 		return "", err
 	}
-
-	// the function that actually does the trick
 	contentType := http.DetectContentType(buf)
-
 	return contentType, nil
 }
