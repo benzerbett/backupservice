@@ -26,8 +26,6 @@ func main() {
 	minioSecret := os.Getenv("MINIO_SECRET")
 	minioSSL := false
 	fmt.Println("URL: ",minioUrl)
-	fmt.Println("ACCESS_KEY: ",minioKey)
-	fmt.Println("SECRET: ", minioSecret)
 
 	// Set up minio
 	endpoint := minioUrl
