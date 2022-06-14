@@ -35,3 +35,8 @@ This repo uses some experimental features in Go 1.18. This is the [slices](https
     go build -o backupservice
 ```
 To deploy, you can schedule this as a cron job or otherwise, depending on your environment.
+
+### TODO
+[] Decouple & clean up the string comparisons to match container names. Perhaps a mapping config?
+[] Better logging (logrus?)
+[] Refactor to use standard Go library, (remove experimental 1.18 slices feature)
