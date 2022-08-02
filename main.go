@@ -82,7 +82,7 @@ func main() {
 			}
 			info, err := minioClient.FPutObject(ctx,
 				fileBucket.Name,
-				f.Name()+time.Now().Local().String(),
+				f.Name()+" - "+time.Now().Local().String(),
 				backupsDir+"/"+f.Name(),
 				minio.PutObjectOptions{ContentType: fileType})
 			if err != nil {
