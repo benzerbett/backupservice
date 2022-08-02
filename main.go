@@ -3,21 +3,24 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/joho/godotenv"
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
-	"golang.org/x/exp/slices"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/joho/godotenv"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
+	"golang.org/x/exp/slices"
 )
+
 func main() {
 	ctx := context.Background()
 	// Load environment variables
 	err := godotenv.Load()
-	if err != nil{
+	if err != nil {
 		log.Fatalln(err)
 	}
 	minioUrl := os.Getenv("MINIO_ENDPOINT")
@@ -25,8 +28,8 @@ func main() {
 	minioKey := os.Getenv("MINIO_ACCESSKEY")
 	minioSecret := os.Getenv("MINIO_SECRET")
 	minioSSL := false
-	fmt.Println("URL: ",minioUrl)
-	fmt.Println("ACCESS_KEY: ",minioKey)
+	fmt.Println("URL: ", minioUrl)
+	fmt.Println("ACCESS_KEY: ", minioKey)
 	fmt.Println("SECRET: ", minioSecret)
 
 	// Set up minio
@@ -48,7 +51,7 @@ func main() {
 
 	// list buckets
 	buckets, err := minioClient.ListBuckets(context.Background())
-	if err != nil{
+	if err != nil {
 		log.Fatalln(err)
 	}
 
@@ -63,12 +66,14 @@ func main() {
 	// loop through files
 	for i, f := range dirFs {
 		// for each file, find a bucket with a corresponding name
-		fileName := strings.ToLower( strings.Split(f.Name(), ".sql")[0] )
-		fileBucketIndex := slices.IndexFunc(buckets, func(b minio.BucketInfo) bool { return fileName == strings.ToLower(strings.Split(b.Name, "-backups")[0]) })
+		fileName := strings.ToLower(strings.Split(f.Name(), ".sql")[0])
+		fileBucketIndex := slices.IndexFunc(buckets, func(b minio.BucketInfo) bool {
+			return fileName == strings.ToLower(strings.Split(b.Name, "-backups")[0])
+		})
 		if fileBucketIndex != -1 {
 			fileBucket := buckets[fileBucketIndex]
-			fmt.Println( fmt.Sprint(i+1)+") File: "+fmt.Sprint(f.Name())+", Bucket: "+fileBucket.Name)
-			fopen, err := os.Open(backupsDir+"/"+f.Name())
+			fmt.Println(fmt.Sprint(i+1) + ") File: " + fmt.Sprint(f.Name()) + ", Bucket: " + fileBucket.Name)
+			fopen, err := os.Open(backupsDir + "/" + f.Name())
 			fmt.Println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 			if err != nil {
 				log.Fatalln("Could not open file "+f.Name()+". ", err)
@@ -77,18 +82,21 @@ func main() {
 			if err != nil {
 				log.Fatalln("Could not read file type.", err)
 			}
-			info, err := minioClient.FPutObject(ctx, fileBucket.Name, f.Name(), backupsDir+"/"+f.Name(), minio.PutObjectOptions{ContentType: fileType})
+			info, err := minioClient.FPutObject(ctx,
+				fileBucket.Name,
+				f.Name()+time.Now().Local().String(),
+				backupsDir+"/"+f.Name(),
+				minio.PutObjectOptions{ContentType: fileType})
 			if err != nil {
 				log.Fatalln(err)
 			}
 			log.Printf("Successfully uploaded %s of size %d\n", f.Name(), info.Size)
-		}else{
-			fmt.Println( "File: "+fmt.Sprint(f.Name()) + ", Bucket not found")
+		} else {
+			fmt.Println("File: " + fmt.Sprint(f.Name()) + ", Bucket not found")
 		}
 	}
 
 }
-
 
 func getFileContentType(ouput *os.File) (string, error) {
 	buf := make([]byte, 512)
