@@ -64,7 +64,7 @@ func main() {
 	// loop through files
 	for i, f := range dirFs {
 		// for each file, find a bucket with a corresponding name
-		fileName := strings.ToLower(strings.Split(f.Name(), ".sql")[0])
+		fileName := strings.ToLower(strings.Split(f.Name(), ".")[0])
 		fileBucketIndex := slices.IndexFunc(buckets, func(b minio.BucketInfo) bool {
 			return fileName == strings.ToLower(strings.Split(b.Name, "-backups")[0])
 		})
